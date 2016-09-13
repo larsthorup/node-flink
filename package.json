@@ -1,0 +1,18 @@
+{
+  "name": "node-flink",
+  "version": "0.1.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/larsthorup/node-flink.git"
+  },
+  "author": "Lars Thorup <lars@zealake.com> (http://github.com/larsthorup)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/larsthorup/node-flink/issues"
+  },
+  "homepage": "https://github.com/larsthorup/node-flink#readme",
+  "dependencies": {
+    "co": "^4.6.0"
+  }
+}
