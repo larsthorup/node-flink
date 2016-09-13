@@ -1,5 +1,5 @@
-class Source {
-  constructor (host, port) {
+class Stream {
+  constructor () {
     this.handler = {};
   }
   on (evt, cb) {
@@ -8,14 +8,21 @@ class Source {
   trigger (evt, value) {
     this.handler[evt](value);
   }
+}
+
+
+class Source {
+  constructor (host, port) {
+    this.stream = new Stream();
+  }
   start () {
     // ToDo: read from socket instead
     setTimeout(() => {
-      this.trigger('data', 'This is line 1');
+      this.stream.trigger('data', 'This is line 1');
       setTimeout(() => {
-        this.trigger('data', 'This is line 2');
+        this.stream.trigger('data', 'This is line 2');
         setTimeout(() => {
-          this.trigger('end');
+          this.stream.trigger('end');
         }, 500);
       }, 500);
     }, 500);
@@ -25,17 +32,11 @@ class Source {
 class PrintSink {
   constructor (source) {
     this.source = source;
-    this.handler = {};
-  }
-  on (evt, cb) { // ToDo: shared stream implementation
-    this.handler[evt] = cb;
-  }
-  trigger (evt, value) {
-    this.handler[evt](value);
+    this.stream = new Stream();
   }
   start () {
-    this.source.on('data', console.log);
-    this.source.on('end', () => { this.trigger('end'); })
+    this.source.stream.on('data', console.log);
+    this.source.stream.on('end', () => { this.stream.trigger('end'); })
     this.source.start();
   }
 }
@@ -71,8 +72,8 @@ class StreamExecutionEnvironment {
 
   executing () {
     return new Promise(function (resolve, reject) {
-      this.plan.on('end', resolve);
-      this.plan.on('error', reject);
+      this.plan.stream.on('end', resolve);
+      this.plan.stream.on('error', reject);
       this.plan.start();
     }.bind(this));
   }
