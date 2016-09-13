@@ -32,7 +32,7 @@ class SocketSource {
 class FlatMapOperator {
   constructor (fn, source) {
     this.source = source;
-    this.stream = new Stream;
+    this.stream = new Stream();
     this.fn = fn;
   }
   start () {
@@ -43,6 +43,23 @@ class FlatMapOperator {
         }
       };
       this.fn(value, out);
+    });
+    this.source.stream.on('end', () => { this.stream.trigger('end'); })
+    this.source.start();
+  }
+}
+
+class KeyByOperator {
+  constructor (index, source) {
+    this.source = source;
+    this.stream = new Stream();
+    this.index = index;
+  }
+  start () {
+    this.source.stream.on('data', (value) => {
+      const key = value[this.index];
+      const keyedValue = {key: key, value: value};
+      this.stream.trigger('data', keyedValue);
     });
     this.source.stream.on('end', () => { this.stream.trigger('end'); })
     this.source.start();
@@ -70,7 +87,7 @@ class DataStream {
     return this;
   }
   keyBy (index) {
-    // ToDo: add keyBy to plan
+    this.env.plan = new KeyByOperator(index, this.env.plan);
     return this;
   }
   sum () {
