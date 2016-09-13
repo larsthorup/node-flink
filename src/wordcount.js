@@ -15,7 +15,7 @@ function running () {
   return co(function * () {
     const env = yield flink.gettingExecutionEnvironment();
     env
-      .socketTextStream('localhost', 9999)
+      .socketTextStream()
       .flatMap(lineSplitter)
       .keyBy(0)
       .sum(1)

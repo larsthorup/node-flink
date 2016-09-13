@@ -12,20 +12,17 @@ class Stream {
 
 
 class SocketSource {
-  constructor (host, port) {
+  constructor () {
     this.stream = new Stream();
   }
   start () {
-    // ToDo: read from socket instead
-    setTimeout(() => {
-      this.stream.trigger('data', 'This is line 1');
-      setTimeout(() => {
-        this.stream.trigger('data', 'This is line 2');
-        setTimeout(() => {
-          this.stream.trigger('end');
-        }, 500);
-      }, 500);
-    }, 500);
+    const rl = require('readline').createInterface({input: process.stdin});
+    rl.on('close', () => {
+      this.stream.trigger('end');
+    });
+    rl.on('line', (input) => {
+      this.stream.trigger('data', input);
+    });
   }
 }
 
@@ -122,9 +119,9 @@ class DataStream {
 }
 
 class StreamExecutionEnvironment {
-  socketTextStream (host, port) {
+  socketTextStream () {
     const dataStream = new DataStream(this);
-    this.plan = new SocketSource (host, port);
+    this.plan = new SocketSource ();
     return dataStream;
   }
 
